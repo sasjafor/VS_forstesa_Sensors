@@ -48,5 +48,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ListView lv;
-    private SensorManager sens_man;
+    public static SensorManager sens_man;
 }

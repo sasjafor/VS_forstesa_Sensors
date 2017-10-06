@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.a1.forstesa.sensors;
 
+import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.jjoe64.graphview.GraphView;
@@ -18,32 +19,28 @@ import java.util.List;
 
 public class GraphContainerImpl {
 
-    GraphContainerImpl(GraphView graph_view, String unit){
+    GraphContainerImpl(GraphView graph_view, String unit, int num_vals){
         graph = graph_view;
-        /*StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(new String[] {"time"});
-        staticLabelsFormatter.setVerticalLabels(new String[] {unit});
-        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);*/
-
+        series = new LineGraphSeries[num_vals];
+        for (int k = 0; k < num_vals; k++) {
+            LineGraphSeries<DataPoint> ser1 = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                    new DataPoint(1,50),
+                    new DataPoint(2,30),
+                    new DataPoint(3,40)
+            });
+            ser1.draw(graph,new Canvas(),false);
+            Paint paint = new Paint();
+            int[] rgb = col(k);
+            paint.setARGB(1,rgb[0],rgb[1],rgb[2]);
+            ser1.setCustomPaint(paint);
+            series[k] = ser1;
+            graph.addSeries(series[k]);
+        }
     }
 
     void addValues(double xIndex, float[] values){
-        if (series == null){
-            //Paint[] paints = new Paint[values.length];
-            series = new LineGraphSeries[values.length];
-            for (int k = 0; k < values.length; k++) {
-                LineGraphSeries<DataPoint> ser1 = new LineGraphSeries<>(new DataPoint[]{});
-                Paint paint = new Paint();
-                int[] rgb = col(k);
-                paint.setARGB(10,rgb[0],rgb[1],rgb[2]);
-                ser1.setCustomPaint(paint);
-                series[k] = ser1;
-                graph.addSeries(series[k]);
-                //System.out.println("DEBUG: " + ser1);
-            }
-        }
         for (int k = 0; k < values.length; k++) {
-            series[k].appendData(new DataPoint(xIndex,values[k]),false,100);
+            //series[k].appendData(new DataPoint(xIndex,values[k]),false,100);
             //System.out.println("DEBUG: "+series[k]);
         }
         //System.out.println("DEBUG: "+graph);
@@ -51,8 +48,9 @@ public class GraphContainerImpl {
 
     float[][] getValues(){
         List<Series> list = graph.getSeries();
+        float[][] res = new float[100][list.size()];
         for (int k = 0; k < list.size(); k++){
-            //list.get(k).
+            //list.get(k).getValues()
         }
         return null;
     }

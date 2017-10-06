@@ -43,8 +43,8 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         text = (TextView) findViewById(R.id.text_view);
         text.setText(sens_name + "\n");
 
-        graph = new GraphContainerImpl((GraphView) findViewById(R.id.graph),sti.getUnitString(sens.getType()));
-        System.out.println("DEBUG: " + graph);
+        graph = new GraphContainerImpl((GraphView) findViewById(R.id.graph),sti.getUnitString(sens.getType()),sti.getNumberValues(sens.getType()));
+        //System.out.println("DEBUG: " + graph);
 
     }
 
@@ -56,7 +56,9 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         //System.out.println("DEBUG: vals=" + vals);
         String str = "";
         int stype = sensorEvent.sensor.getType();
-        for (int k = 0; k < sti.getNumberValues(stype); k++){
+        int num_vals = sti.getNumberValues(stype);
+        int t = (num_vals == 0) ? vals.length : num_vals;
+        for (int k = 0; k < t; k++){
             str = str + "SensorValue" + k + "= " + vals[k] + " " + sti.getUnitString(stype) + "\n";
             //System.out.println("DEBUG: k=" + k);
         }

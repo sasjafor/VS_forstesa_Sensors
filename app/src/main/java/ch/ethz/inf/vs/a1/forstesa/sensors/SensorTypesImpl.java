@@ -12,36 +12,6 @@ import android.hardware.SensorManager;
 
 public class SensorTypesImpl implements SensorTypes {
 
-    /*public int getNumberValues(int sensorType){
-        Sensor sens = SensorManager.
-        MainActivity.sens_man.registerListener(msel,sens,0);
-        MainActivity.sens_man.unregisterListener(msel);
-        return n;
-    }
-
-    public String getUnitString(int sensorType){
-        Sensor sens = MainActivity.sens_man.getDefaultSensor(sensorType);
-        MainActivity.sens_man.registerListener(msel,sens,0);
-        MainActivity.sens_man.unregisterListener(msel);
-        return "Hello";
-    }
-
-    private class MySensorEventListener implements SensorEventListener{
-
-        @Override
-        public void onSensorChanged(SensorEvent sensorEvent) {
-            n = sensorEvent.values.length;
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-
-        }
-    }
-
-    private int n;
-    private MySensorEventListener msel = new MySensorEventListener();*/
-
     public int getNumberValues(int sensorType){
         switch (sensorType) {
             case 1:

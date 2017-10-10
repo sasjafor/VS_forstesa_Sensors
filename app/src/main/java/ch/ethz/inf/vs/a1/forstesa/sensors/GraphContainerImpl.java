@@ -1,52 +1,35 @@
 package ch.ethz.inf.vs.a1.forstesa.sensors;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.Color;
 
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.LegendRenderer;
-import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 
-import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by sascha on 06.10.17.
- */
-
-public class GraphContainerImpl {
+public class GraphContainerImpl implements GraphContainer{
 
     GraphContainerImpl(GraphView graph_view, String unit, int num_vals){
         graph = graph_view;
-        series = new LineGraphSeries[num_vals];
-        for (int k = 0; k < num_vals; k++) {
-            LineGraphSeries<DataPoint> ser1 = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                    new DataPoint(1,50),
-                    new DataPoint(2,30),
-                    new DataPoint(3,40)
-            });
-            ser1.draw(graph,new Canvas(),false);
-            Paint paint = new Paint();
-            int[] rgb = col(k);
-            paint.setARGB(1,rgb[0],rgb[1],rgb[2]);
-            ser1.setCustomPaint(paint);
-            series[k] = ser1;
+        n_vals = num_vals;
+        System.out.println("DEBUG: n_vals="+n_vals);
+        series = new LineGraphSeries[n_vals];
+        for (int k = 0; k < n_vals; k++) {
+            series[k] = new LineGraphSeries<>();
+            series[k].setColor(col(k));
             graph.addSeries(series[k]);
         }
     }
 
-    void addValues(double xIndex, float[] values){
-        for (int k = 0; k < values.length; k++) {
-            //series[k].appendData(new DataPoint(xIndex,values[k]),false,100);
-            //System.out.println("DEBUG: "+series[k]);
+    public void addValues(double xIndex, float[] values){
+        for (int k = 0; k < n_vals; k++) {
+            series[k].appendData(new DataPoint(xIndex,values[k]),true,100);
         }
-        //System.out.println("DEBUG: "+graph);
     }
 
-    float[][] getValues(){
+    public float[][] getValues(){
         List<Series> list = graph.getSeries();
         float[][] res = new float[100][list.size()];
         for (int k = 0; k < list.size(); k++){
@@ -55,19 +38,21 @@ public class GraphContainerImpl {
         return null;
     }
 
-    private int[] col(int k){
+    private static int col(int k){
         switch (k){
             case 0:
-                return new int[]{255,0,0};
+                return Color.RED;
             case 1:
-                return new int[]{0,255,0};
+                return Color.GREEN;
             case 2:
-                return new int[]{0,0,255};
+                return Color.BLUE;
             default:
-                return new int[]{0,0,0};
+                return Color.BLACK;
         }
     }
 
     private GraphView graph;
-    private LineGraphSeries<DataPoint>[] series;
+    private LineGraphSeries ser0,ser1,ser2;
+    private LineGraphSeries[] series;
+    private int n_vals;
 }

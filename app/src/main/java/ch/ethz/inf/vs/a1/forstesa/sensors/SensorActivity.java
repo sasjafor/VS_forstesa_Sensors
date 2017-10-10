@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.a1.forstesa.sensors;
 
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -43,8 +44,15 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         text = (TextView) findViewById(R.id.text_view);
         text.setText(sens_name + "\n");
 
-        graph = new GraphContainerImpl((GraphView) findViewById(R.id.graph),sti.getUnitString(sens.getType()),sti.getNumberValues(sens.getType()));
-        //System.out.println("DEBUG: " + graph);
+        int n_vals = sti.getNumberValues(sens.getType());
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(100);
+
+        graph_container = new GraphContainerImpl(graph,sti.getUnitString(sens.getType()),n_vals);
 
     }
 
@@ -53,6 +61,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         //System.out.println("DEBUG: onSensorChanged");
 
         float[] vals = sensorEvent.values.clone();
+        long time = sensorEvent.timestamp;
         //System.out.println("DEBUG: vals=" + vals);
         String str = "";
         int stype = sensorEvent.sensor.getType();
@@ -65,7 +74,14 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         //System.out.println("DEBUG: str="+str);
         text.setText(sens_name + "\n" + str);
 
-        graph.addValues(sensorEvent.timestamp, vals);
+        time = (time/100000000);
+        graph_container.addValues(time, vals);
+        //System.out.println("DEBUG: num_vals="+num_vals);
+        //System.out.println("DEBUG: time="+time);
+    }
+
+    public GraphContainerImpl getGraphContainer(){
+        return graph_container;
     }
 
     @Override
@@ -73,8 +89,15 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
     }
 
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.activity_sensor);
+
+    }*/
+
     private TextView text;
-    private GraphContainerImpl graph;
+    private GraphContainerImpl graph_container;
     private String sens_name;
     private Sensor sens;
     private SensorTypesImpl sti = new SensorTypesImpl();

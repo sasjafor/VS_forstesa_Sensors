@@ -10,13 +10,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import static android.R.id.list;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,15 +21,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sens_man = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         // List of Sensors Available
         final List<Sensor> sens_list = sens_man.getSensorList(Sensor.TYPE_ALL);
-        final ArrayList<String> sens_names = new ArrayList<String>();
+        final ArrayList<String> sens_names = new ArrayList<>();
+
         for (Sensor i : sens_list){
             sens_names.add(i.getName());
-            //System.out.println("DEBUG: "+i.getName());
         }
+
         lv = (ListView) findViewById(R.id.list_view);
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sens_names);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sens_names);
         lv.setAdapter(adapter);
         lv.setEnabled(true);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,5 +46,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ListView lv;
-    public static SensorManager sens_man;
+    private SensorManager sens_man;
 }

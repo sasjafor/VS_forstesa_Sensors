@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.a1.forstesa.sensors;
 
-import android.content.res.Configuration;
+import android.content.Context;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,8 +13,6 @@ import android.widget.TextView;
 import com.jjoe64.graphview.GraphView;
 
 import java.util.List;
-
-import static ch.ethz.inf.vs.a1.forstesa.sensors.MainActivity.sens_man;
 
 public class SensorActivity extends AppCompatActivity implements SensorEventListener{
 
@@ -32,19 +31,30 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
-        sens_name = getIntent().getExtras().getString("sensor_name");
-        //System.out.println("DEBUG: sens_name="+sens_name);
+        int sens_type = 0;
+        sens_man = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> sens_list = sens_man.getSensorList(Sensor.TYPE_ALL);
+        Bundle extras = getIntent().getExtras();
+
+        int n_vals = sti.getNumberValues(sens_type);
+
+        if (extras != null) {
+            sens_name = getIntent().getExtras().getString("sensor_name");
+        }
+
         for(Sensor i : sens_list){
             if(i.getName().equals(sens_name)) sens = i;
-            //System.out.println("DEBUG: i.name="+i.getName());
         }
-        sens_man.registerListener(this, sens, SensorManager.SENSOR_DELAY_NORMAL);
-        //System.out.println("DEBUG: "+sens);
-        text = (TextView) findViewById(R.id.text_view);
-        text.setText(sens_name + "\n");
 
-        int n_vals = sti.getNumberValues(sens.getType());
+        if (sens != null){
+            sens_type = sens.getType();
+        }
+
+        sens_man.registerListener(this, sens, SensorManager.SENSOR_DELAY_NORMAL);
+
+        text = (TextView) findViewById(R.id.text_view);
+        Resources res = getResources();
+        text.setText(res.getString(R.string.sens_name,sens_name));
 
         GraphView graph = (GraphView) findViewById(R.id.graph);
 
@@ -52,32 +62,35 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         graph.getViewport().setMinX(0);
         graph.getViewport().setMaxX(100);
 
-        graph_container = new GraphContainerImpl(graph,sti.getUnitString(sens.getType()),n_vals);
+        graph_container = new GraphContainerImpl(graph,sti.getUnitString(sens_type),n_vals);
 
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        //System.out.println("DEBUG: onSensorChanged");
+        if (t0 == 0){
+            t0 = sensorEvent.timestamp;
+        }
 
         float[] vals = sensorEvent.values.clone();
-        long time = sensorEvent.timestamp;
-        //System.out.println("DEBUG: vals=" + vals);
+        long time = (sensorEvent.timestamp - t0) / 100000000;
         String str = "";
         int stype = sensorEvent.sensor.getType();
-        int num_vals = sti.getNumberValues(stype);
-        int t = (num_vals == 0) ? vals.length : num_vals;
-        for (int k = 0; k < t; k++){
-            str = str + "SensorValue" + k + "= " + vals[k] + " " + sti.getUnitString(stype) + "\n";
-            //System.out.println("DEBUG: k=" + k);
-        }
-        //System.out.println("DEBUG: str="+str);
-        text.setText(sens_name + "\n" + str);
+        int n_vals = sti.getNumberValues(stype);
+        n_vals = (n_vals == 0) ? vals.length : n_vals;
+        float[] vals1 = new float[n_vals];
+        Resources res = getResources();
 
-        time = (time/100000000);
-        graph_container.addValues(time, vals);
-        //System.out.println("DEBUG: num_vals="+num_vals);
-        //System.out.println("DEBUG: time="+time);
+        for (int k = 0; k < n_vals; k++){
+            String unit = sti.getUnitString(stype);
+            str = str + res.getString(R.string.values,k,vals[k],unit);
+            vals1[k] = vals[k];
+        }
+
+        String txt = res.getString(R.string.sens_name,sens_name) + str;
+        text.setText(txt);
+
+        graph_container.addValues(time, vals1);
     }
 
     public GraphContainerImpl getGraphContainer(){
@@ -89,16 +102,11 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
     }
 
-    /*@Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setContentView(R.layout.activity_sensor);
-
-    }*/
-
+    private long t0 = 0;
     private TextView text;
     private GraphContainerImpl graph_container;
     private String sens_name;
     private Sensor sens;
+    private SensorManager sens_man;
     private SensorTypesImpl sti = new SensorTypesImpl();
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">VS_forstesa_Sensors</string>
+    <string name="sens_name">%1$s\n</string>
+    <string name="values">SensorValue%1$d= %2$f %3$s\n</string>
 </resources>

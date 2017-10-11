@@ -1,7 +1,6 @@
 package ch.ethz.inf.vs.a1.forstesa.sensors;
 
 import android.graphics.Color;
-import android.provider.ContactsContract;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;

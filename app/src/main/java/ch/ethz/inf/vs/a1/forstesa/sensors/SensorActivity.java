@@ -64,6 +64,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
         graph_container = new GraphContainerImpl(graph,sti.getUnitString(sens_type),n_vals);
 
+
     }
 
     @Override
